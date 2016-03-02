@@ -5,6 +5,112 @@
     <title>Flying Balls</title>
 </head>
 <body>
+    <div style="width:100px; height: 50px; background-color:purple; position:absolute; left:0px; top:0px; border-radius: 0px 0px 50px 0px;" onclick="addNewBall()"><div style="color:white; position:absolute; left:15px; top:15px;">PRESS!</div></div>
     
+    <script>
+        var arrColor = new Array("red","green","yellow","pink","lightgreen","blueviolet","coral","crimson","darkgoldenrod","darkmagenta","fuchsia");
+        var arrObj = new Array() //Handler of all balls
+        ,minBallSize = 40
+        ,maxBallSize = 100
+        ,minDevBall = 1
+        ,maxDevBall = 7
+        ,ballOnPress = 8;
+
+        //Constructor of the new Ball-object
+        function Ball(){
+            this.positionX = Math.round(Math.random()*(window.innerWidth-maxBallSize))
+                ,this.positionY = Math.round(Math.random()*(window.innerHeight-maxBallSize))
+                ,this.devX = (minDevBall + Math.round(Math.random()*(maxDevBall-minDevBall))) * plusMinus()
+                ,this.devY = (minDevBall + Math.round(Math.random()*(maxDevBall-minDevBall))) * plusMinus()
+                ,this.ballSize = minBallSize + Math.round(Math.random()*(maxBallSize-minBallSize))
+                ,this.color = arrColor[Math.round(Math.random()*(arrColor.length-1))];
+        };
+
+        //Randomly choosing direction of the mooving
+        function plusMinus () {
+            if (Math.round(Math.random()*10) >= 5) {
+                return 1;
+            } else {
+                return -1;
+            };
+        };
+
+        //Function to add a new Ball
+        function addNewBall(){
+            var nBall = new Ball();
+            var N = arrObj.push(nBall) - 1; //getting ID of the ball, because push method return length of the array
+
+            document.getElementsByTagName("div")[1].innerHTML = arrObj.length + " balls";
+            var s = document.body.appendChild(document.createElement("span"));
+            s.style.width = nBall.ballSize + "px";
+            s.style.height = nBall.ballSize + "px";
+            s.style.borderRadius = nBall.ballSize + "px";
+            s.style.backgroundColor = nBall.color;
+            s.style.position = "absolute";
+            s.style.left = nBall.positionX + "px";
+            s.style.top = nBall.positionY + "px";
+            s.id = N;
+            s.addEventListener("mousedown", pressedBall , false);
+        };
+
+        //Function on pressed ball
+        function pressedBall(){
+
+            for (var i = 1; i <= ballOnPress; i++) {
+                var nBall = new Ball();
+                var N = arrObj.push(nBall) - 1; //getting ID of the ball, because push method return length of the array
+                document.getElementsByTagName("div")[1].innerHTML = arrObj.length + " balls";
+                var s = document.body.appendChild(document.createElement("span"));
+                s.style.width = nBall.ballSize + "px";
+                s.style.height = nBall.ballSize + "px";
+                s.style.borderRadius = nBall.ballSize + "px";
+                s.style.backgroundColor = nBall.color;
+                s.style.position = "absolute";
+                //fix ball positioning to use it for other balls which will appear onMousedown
+                nBall.positionX = parseInt(this.style.left);
+                nBall.positionY = parseInt(this.style.top);
+                s.style.left = nBall.positionX + "px";
+                s.style.top = nBall.positionY + "px";
+                s.id = N;
+                s.addEventListener("mousedown", pressedBall , false);
+            };
+
+            //    document.body.removeChild(this);
+
+        };
+
+        //Function to moove all balls
+        function mooving(){
+            var wHeight = window.innerHeight
+            ,wWidth = window.innerWidth; //putting window screen size into var in order not to do it for each ball below
+
+            for (var i = 0, len = arrObj.length; i < len; i++) {
+                var elem = document.getElementById(i);
+
+                if ((arrObj[i].positionY += arrObj[i].devY) > (wHeight-maxBallSize) || (arrObj[i].positionY -= arrObj[i].devY) < 0) {
+                    arrObj[i].devY *= -1;
+                    elem.style.top = arrObj[i].positionY + arrObj[i].devY + "px";
+                    arrObj[i].positionY += arrObj[i].devY;
+                } else {
+                    elem.style.top = arrObj[i].positionY + arrObj[i].devY + "px";
+                    arrObj[i].positionY += arrObj[i].devY;
+                };
+
+                if ((arrObj[i].positionX += arrObj[i].devX) > (wWidth-maxBallSize) || (arrObj[i].positionX -= arrObj[i].devX) < 0) {
+                    arrObj[i].devX *= -1;
+                    elem.style.left = arrObj[i].positionX + arrObj[i].devX + "px";
+                    arrObj[i].positionX += arrObj[i].devX;
+                } else {
+                    elem.style.left = arrObj[i].positionX + arrObj[i].devX + "px";
+                    arrObj[i].positionX += arrObj[i].devX;
+                };
+
+            };
+
+        };
+
+        setInterval(mooving, 10);
+
+    </script>
 </body>
 </html>
